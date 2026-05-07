@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etch-a-Sketch</title>
+
+    <style>
+        #container { /*drawing board*/
+            display: flex; /*puts child divs in a row*/
+            flex-wrap: wrap; /*allows to move next line*/
+            /*^this combo creates a grid-like layout without css grid*/
+            width: 960px;
+            height: 960px;
+            border: 1px solid rgb(250, 246, 4);
+        }
+        .newDiv {
+            border: 1px solid #15dbe2; /*shows borders -> grids visible*/
+            box-sizing: border-box; /*means border is included inside square*/
+        }
+        
+    </style>
+</head>
+<body>
+    <button id="resizeBtn">click to change grid size</button>
+    <div id="container"></div>
+    
+    <script>
+        const container = document.querySelector("#container"); //css selector to match ID# or any other css
+        const resizeBtn = document.querySelector("#resizeBtn");
+        const containerSize = 960;
+        
+        function createGrid(gridSize) {
+            container.innerHTML = ""; //clears old grid
+            const totalSq = gridSize * gridSize;
+            const squareSize = containerSize / gridSize;
+
+            //for loop to create multiple divs/squares. 
+            for (let i=0; i < totalSq ; i++){
+                const newDiv = document.createElement('div'); //creates a div in memory. Not visible yet.
+                newDiv.classList.add("newDiv"); //adds class to div from css ''.newDiv'
+                newDiv.style.width = `${squareSize}px`; //changes each div size based on grid size entered.
+                newDiv.style.height = `${squareSize}px`;
+
+                let darkness = 0; //set each square start with 0 darkness. Placed inside loop bc eaach square needs own separate darkness counter.
+                newDiv.addEventListener("mouseover", ()=>{ //Hover interaction. Which creates hover trail effect 
+                    if (darkness<1) {
+                        darkness += 0.1; //each hover adds 10% darkness.
+                    }
+                    const r = Math.floor(Math.random() * 256 * (1 - darkness)); //(1-darkness) reduces brightness value for rgb, +0.1 darkness -> 0.9 rgb brightness.
+                    const g = Math.floor(Math.random() * 256 * (1 - darkness)); //Max value for each r,g,b is 255, 0-255 -> total 256 values bc Math.floor&Math.random() rounds down so +1
+                    const b = Math.floor(Math.random() * 256 * (1 - darkness));
+                    newDiv.style.backgroundColor=`rgb(${r},${g},${b})`;  //applies color to divs
+            })
+                 container.appendChild(newDiv); //Puts divs created in memory into the container ->now visible & repeat to fill the grid
+
+        }}
+
+        resizeBtn.addEventListener("click", () =>{
+            let input =prompt("Enter number of squares per side. Max 100");
+            let newSize = Number(input); //converts input text to number
+
+            if (newSize > 0 && newSize <=100){
+                createGrid(newSize);
+            } else{
+                alert("Invalid. Enter a number between 1-100.")
+            }
+        })
+
+        createGrid(16);
+    </script>
+</body>
+</html>
